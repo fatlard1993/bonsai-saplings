@@ -25,5 +25,8 @@
     "fabric-api": "${fabricApiVersion}",
     "minecraft": "${minecraftDependency}",
     "java": ">=25"
+  },
+  "suggests": {
+    "better-trees-justfatlard": "*"
   }
 }

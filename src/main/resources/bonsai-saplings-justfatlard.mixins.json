@@ -3,6 +3,8 @@
   "package": "justfatlard.bonsai_saplings.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
+    "BlockDisplayAccessor",
+    "FlowerPotAccessor",
     "FlowerPotMixin"
   ],
   "injectors": {

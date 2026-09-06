@@ -42,11 +42,14 @@ public final class CreeperBonsai {
 
 		BlockPos pot = hit.getBlockPos();
 		if (!serverLevel.getBlockState(pot).is(Blocks.FLOWER_POT)) return InteractionResult.PASS;
+		// An empty pot is empty of trees too. A bonsai stands in an empty pot block now, and it
+		// is somebody's tree.
+		if (BonsaiTree.has(serverLevel, pot)) return InteractionResult.PASS;
 
 		// Taken before the egg gets its turn, which is the whole reason this is a callback and
 		// not a hook on the pot: an egg that reaches its own use has already spawned a creeper.
 		BonsaiTree.plant(serverLevel, pot, BonsaiSpecies.creeper(), BonsaiShape.CREEPER,
-			serverLevel.getRandom().nextInt(4));
+			serverLevel.getRandom().nextInt(4), null);
 		stack.consume(1, player);
 
 		serverLevel.playSound(null, pot, SoundEvents.MOSS_PLACE, SoundSource.BLOCKS, 0.8F, 1.2F);

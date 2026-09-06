@@ -18,7 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
  * three that do not follow the rule are named below, and a species that resolves to neither a log
  * nor leaves is simply not one this mod grows.
  */
-public record BonsaiSpecies(BlockState wood, BlockState leaves) {
+public record BonsaiSpecies(BlockState wood, BlockState leaves, String kind) {
 	private static Map<Block, BonsaiSpecies> known;
 
 	/**
@@ -31,14 +31,40 @@ public record BonsaiSpecies(BlockState wood, BlockState leaves) {
 	public static BonsaiSpecies creeper() {
 		return new BonsaiSpecies(
 			Blocks.DARK_PRISMARINE.defaultBlockState(),
-			Blocks.MOSS_BLOCK.defaultBlockState());
+			Blocks.MOSS_BLOCK.defaultBlockState(), "creeper");
 	}
 
-	/** The odd ones out: a propagule is a mangrove, and an azalea grows on ordinary oak. */
+	/**
+	 * The odd ones out: a propagule is a mangrove, an azalea grows on ordinary oak, and a poplar
+	 * has no leaves of its own name, only the three autumn colours it turns; it is potted in gold.
+	 */
 	private static final Map<String, String[]> IRREGULAR = Map.of(
-		"potted_mangrove_propagule", new String[] {"mangrove_log", "mangrove_leaves"},
-		"potted_azalea_bush", new String[] {"oak_log", "azalea_leaves"},
-		"potted_flowering_azalea_bush", new String[] {"oak_log", "flowering_azalea_leaves"});
+		"potted_poplar_sapling", new String[] {"poplar_log", "yellow_poplar_leaves", "poplar"},
+		"potted_mangrove_propagule", new String[] {"mangrove_log", "mangrove_leaves", "mangrove"},
+		"potted_azalea_bush", new String[] {"oak_log", "azalea_leaves", "azalea"},
+		"potted_flowering_azalea_bush", new String[] {"oak_log", "flowering_azalea_leaves", "flowering_azalea"});
+
+	/** The potted block whose species wears these leaves, or null. */
+	public static Block pottedForLeaves(Block leaves) {
+		if (known == null) known = buildTable();
+		for (Map.Entry<Block, BonsaiSpecies> entry : known.entrySet()) {
+			if (entry.getValue().leaves().getBlock() == leaves) return entry.getKey();
+		}
+		return null;
+	}
+
+	/** The plain sapling whose species is grown on this wood, or null. Only a last resort: azaleas share oak. */
+	public static Block pottedForWood(Block wood) {
+		if (known == null) known = buildTable();
+		Block found = null;
+		for (Map.Entry<Block, BonsaiSpecies> entry : known.entrySet()) {
+			if (entry.getValue().wood().getBlock() != wood) continue;
+			String name = BuiltInRegistries.BLOCK.getKey(entry.getKey()).getPath();
+			if (name.endsWith("_sapling")) return entry.getKey();
+			if (found == null) found = entry.getKey();
+		}
+		return found;
+	}
 
 	/** The species this potted block grows into, or null if it is not one we do anything with. */
 	public static BonsaiSpecies of(Block potted) {
@@ -59,14 +85,14 @@ public record BonsaiSpecies(BlockState wood, BlockState leaves) {
 				if (!name.endsWith("_sapling")) continue;
 
 				String species = name.substring("potted_".length(), name.length() - "_sapling".length());
-				parts = new String[] {species + "_log", species + "_leaves"};
+				parts = new String[] {species + "_log", species + "_leaves", species};
 			}
 
 			Block wood = byName(parts[0]);
 			Block leaves = byName(parts[1]);
 			if (wood == null || leaves == null) continue;
 
-			table.put(block, new BonsaiSpecies(wood.defaultBlockState(), leaves.defaultBlockState()));
+			table.put(block, new BonsaiSpecies(wood.defaultBlockState(), leaves.defaultBlockState(), parts[2]));
 		}
 		return table;
 	}
