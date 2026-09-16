@@ -36,15 +36,20 @@ public class Main implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
-		// Sneaking shears cut it back, and it comes up as a different form. Taken here rather
-		// than left to the block, because a pot has no answer for shears and would let them fall
-		// through to whatever the player is standing on. Sneaking, so that every plain click on the
-		// pot is vanilla's: an empty hand empties it, a plant is refused, and shears held the
-		// ordinary way do what any other item does.
+		// Sneaking shears cut it back, and it comes up as a different form; on a creeper, which
+		// has only the one form, they turn it a quarter instead. Taken here rather than left to
+		// the block, because a pot has no answer for shears and would let them fall through to
+		// whatever the player is standing on. Sneaking, so that every plain click on the pot is
+		// vanilla's: an empty hand empties it, a plant is refused, and shears held the ordinary
+		// way do what any other item does.
 		UseBlockCallback.EVENT.register((player, level, hand, hit) -> {
 			if (!(level instanceof ServerLevel serverLevel)) return InteractionResult.PASS;
 
 			BlockPos pot = hit.getBlockPos();
+			if (Cachepot.isVessel(serverLevel.getBlockState(pot))) {
+				Bonsai.settle(serverLevel, pot);
+				return Cachepot.use((net.minecraft.server.level.ServerPlayer) player, serverLevel, pot, hand);
+			}
 			boolean sapling = BonsaiSpecies.of(serverLevel.getBlockState(pot).getBlock()) != null;
 			if (!sapling && !Bonsai.isBonsaiPot(serverLevel, pot)) return InteractionResult.PASS;
 
@@ -61,9 +66,11 @@ public class Main implements ModInitializer {
 
 			ItemStack stack = player.getItemInHand(hand);
 			if (!stack.is(Items.SHEARS) || !player.isSecondaryUseActive()) return InteractionResult.PASS;
-			if (!BonsaiTree.isTree(serverLevel, pot)) return InteractionResult.PASS;
 
-			BonsaiTree.cycle(serverLevel, pot);
+			if (BonsaiTree.isTree(serverLevel, pot)) BonsaiTree.cycle(serverLevel, pot);
+			else if (BonsaiTree.isCreeper(serverLevel, pot)) CreeperBonsai.turn(serverLevel, pot);
+			else return InteractionResult.PASS;
+
 			stack.hurtAndBreak(1, (net.minecraft.server.level.ServerPlayer) player,
 				net.minecraft.world.entity.EquipmentSlot.MAINHAND);
 
@@ -71,11 +78,13 @@ public class Main implements ModInitializer {
 			return InteractionResult.SUCCESS;
 		});
 
-		// A broken pot takes its tree with it, and gives the sapling back: the pot is empty, so
-		// vanilla's drop is the pot alone. BEFORE, so the pot is still there to be recognised.
+		// A broken pot takes its tree with it, and gives the sapling back - or the egg, for a
+		// creeper: the pot is empty, so vanilla's drop is the pot alone. BEFORE, so the pot is
+		// still there to be recognised.
 		PlayerBlockBreakEvents.BEFORE.register((level, player, pos, state, blockEntity) -> {
 			if (!(level instanceof ServerLevel serverLevel)) return true;
-			if (Bonsai.isBonsaiPot(serverLevel, pos) && !player.isCreative()) {
+			if ((Bonsai.isBonsaiPot(serverLevel, pos) || Cachepot.isVessel(state)) && BonsaiTree.has(serverLevel, pos)
+					&& !player.isCreative()) {
 				ItemStack sapling = Bonsai.saplingIn(serverLevel, pos);
 				if (!sapling.isEmpty()) {
 					net.minecraft.world.level.block.Block.popResource(serverLevel, pos, sapling);

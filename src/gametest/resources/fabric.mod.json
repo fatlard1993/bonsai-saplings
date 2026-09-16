@@ -1,0 +1,18 @@
+{
+	"schemaVersion": 1,
+	"id": "bonsai-saplings-gametest",
+	"version": "1.0.0",
+	"name": "Bonsai Saplings game tests",
+	"description": "Plants in pots and cachepots through the server's click path.",
+	"license": "MIT",
+	"environment": "*",
+	"entrypoints": {
+		"fabric-client-gametest": [
+			"justfatlard.bonsai_saplings.gametest.CachepotForms"
+		]
+	},
+	"depends": {
+		"bonsai-saplings-justfatlard": "*",
+		"fabric-client-gametest-api-v1": "*"
+	}
+}

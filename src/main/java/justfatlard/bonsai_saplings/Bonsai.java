@@ -7,6 +7,8 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
 /** Keeping what is in a pot and what is standing in it saying the same thing. */
+import net.minecraft.world.item.ItemStack;
+
 public final class Bonsai {
 	private Bonsai() {}
 
@@ -18,12 +20,26 @@ public final class Bonsai {
 	 * standing in it? Anything that can change either answer can call this and be right.
 	 */
 	public static void settle(ServerLevel level, BlockPos pot) {
-		// A creeper stands in a plain flower pot, so every check below would read it as a tree in
-		// an empty pot and clear it away. It answers to nothing here: it was planted deliberately
-		// and it leaves when the pot does.
+		// A creeper stands in a plain flower pot with no sapling to record, so the checks below
+		// would read it as a tree with no record and try to work out what it grew from. It answers
+		// to nothing here: it was planted deliberately and it leaves when the pot does.
 		if (BonsaiTree.isCreeper(level, pot)) return;
 
 		BlockState state = level.getBlockState(pot);
+
+		// A cachepot keeps its own record from the moment it is planted, so there is nothing to
+		// catch up on. What can go wrong is the flower pot leaving it - a hopper under a decorated
+		// pot takes what is inside - and without it the pot is a pot again: the plant is handed
+		// back where it stands and the tree goes.
+		if (Cachepot.isVessel(state)) {
+			if (BonsaiTree.has(level, pot) && !Cachepot.holdsPot(level, pot)) {
+				ItemStack plant = saplingIn(level, pot);
+				if (!plant.isEmpty()) Block.popResource(level, pot.above(), plant);
+				BonsaiTree.clear(level, pot);
+			}
+			return;
+		}
+
 		Block potted = state.getBlock();
 		BonsaiSpecies species = BonsaiSpecies.of(potted);
 
@@ -35,7 +51,8 @@ public final class Bonsai {
 			if (BonsaiTree.has(level, pot)) {
 				BonsaiTree.remember(level, pot, potted);
 			} else {
-				java.util.List<BonsaiShape> forms = BonsaiShape.family(species.kind());
+				java.util.List<BonsaiShape> forms = Cachepot.growsLarge(level, pot)
+					? BonsaiShape.large(species.kind()) : BonsaiShape.family(species.kind());
 				BonsaiTree.plant(level, pot, species,
 					forms.get(level.getRandom().nextInt(forms.size())),
 					level.getRandom().nextInt(4), potted);
@@ -49,7 +66,7 @@ public final class Bonsai {
 		// own leaves. It used to be cleared as junk, which made the first touch of any kind the
 		// end of every tree from the earlier build.
 		if (state.is(Blocks.FLOWER_POT) && BonsaiTree.has(level, pot)) {
-			if (BonsaiTree.pottedIn(level, pot) != null) return;
+			if (BonsaiTree.pottedIn(level, pot) != null || BonsaiTree.itemIn(level, pot) != null) return;
 			Block inferred = BonsaiTree.inferPotted(level, pot);
 			if (inferred != null) {
 				BonsaiTree.remember(level, pot, inferred);
@@ -60,17 +77,42 @@ public final class Bonsai {
 		BonsaiTree.clear(level, pot);
 	}
 
-	/** Whether this is an empty pot with a tree standing in it: a bonsai, as the player sees it. */
-	public static boolean isBonsaiPot(ServerLevel level, BlockPos pot) {
-		return level.getBlockState(pot).is(Blocks.FLOWER_POT) && BonsaiTree.isTree(level, pot);
+	/**
+	 * Whether this is an empty pot with something standing in it, tree or creeper: a bonsai, as
+	 * the player sees it, and a full pot as far as vanilla's pot behaviour is concerned.
+	 */
+	/**
+	 * Plant something the game has no potted block for straight into an empty pot: a chorus
+	 * flower, a handful of grass, a seed. True when it was, and the item has been spent.
+	 */
+	public static boolean plantItem(ServerLevel level, BlockPos pot, net.minecraft.world.entity.player.Player player,
+			net.minecraft.world.item.ItemStack stack) {
+		if (!level.getBlockState(pot).is(Blocks.FLOWER_POT) || BonsaiTree.has(level, pot)) return false;
+		BonsaiSpecies species = BonsaiSpecies.ofItem(stack.getItem());
+		if (species == null) return false;
+		java.util.List<BonsaiShape> forms = Cachepot.growsLarge(level, pot)
+			? BonsaiShape.large(species.kind()) : BonsaiShape.family(species.kind());
+		BonsaiTree.plantFromItem(level, pot, stack.getItem(), species,
+			forms.get(level.getRandom().nextInt(forms.size())), level.getRandom().nextInt(4));
+		if (!player.getAbilities().instabuild) stack.shrink(1);
+		return true;
 	}
 
-	/** The sapling this pot's tree grew from, or an empty stack when nothing recorded it. */
+	public static boolean isBonsaiPot(ServerLevel level, BlockPos pot) {
+		return level.getBlockState(pot).is(Blocks.FLOWER_POT) && BonsaiTree.has(level, pot);
+	}
+
+	/**
+	 * What this pot's occupant was planted from - the sapling, or the egg for a creeper - or an
+	 * empty stack when nothing recorded it.
+	 */
 	public static net.minecraft.world.item.ItemStack saplingIn(ServerLevel level, BlockPos pot) {
+		if (BonsaiTree.isCreeper(level, pot)) return CreeperBonsai.eggStack();
 		Block potted = BonsaiTree.pottedIn(level, pot);
-		if (!(potted instanceof net.minecraft.world.level.block.FlowerPotBlock flowerPot)) {
-			return net.minecraft.world.item.ItemStack.EMPTY;
+		if (potted instanceof net.minecraft.world.level.block.FlowerPotBlock flowerPot) {
+			return new net.minecraft.world.item.ItemStack(flowerPot.getPotted());
 		}
-		return new net.minecraft.world.item.ItemStack(flowerPot.getPotted());
+		net.minecraft.world.item.Item item = BonsaiTree.itemIn(level, pot);
+		return item == null ? net.minecraft.world.item.ItemStack.EMPTY : new net.minecraft.world.item.ItemStack(item);
 	}
 }

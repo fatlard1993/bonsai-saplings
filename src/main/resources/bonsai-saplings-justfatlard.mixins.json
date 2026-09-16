@@ -5,7 +5,9 @@
   "mixins": [
     "BlockDisplayAccessor",
     "FlowerPotAccessor",
-    "FlowerPotMixin"
+    "FlowerPotMixin",
+    "MobMixin",
+    "MonsterMixin"
   ],
   "injectors": {
     "defaultRequire": 1

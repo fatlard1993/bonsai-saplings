@@ -29,10 +29,10 @@ import net.minecraft.world.phys.BlockHitResult;
  * has settled answers both without having to work out which just happened.
  *
  * <p>The behaving happens at the head. A bonsai stands in an empty pot block - the sapling is
- * taken out of the pot so it stops drawing through the trunk - and vanilla reads an empty pot as
- * something to put a plant in. So a plant offered to a pot with a tree is refused the way a full
- * pot refuses it, and an empty hand takes the tree out and gets the sapling back, the way an
- * empty hand empties any other pot.
+ * taken out of the pot so it stops drawing through the trunk, and a creeper never had one - and
+ * vanilla reads an empty pot as something to put a plant in. So a plant offered to a pot with a
+ * tree is refused the way a full pot refuses it, and an empty hand takes the tree out and gets
+ * the sapling back, or the egg, the way an empty hand empties any other pot.
  */
 @Mixin(FlowerPotBlock.class)
 public class FlowerPotMixin {
@@ -42,6 +42,12 @@ public class FlowerPotMixin {
 			Player player, InteractionHand hand, BlockHitResult hit,
 			CallbackInfoReturnable<InteractionResult> cir) {
 		if (!(level instanceof ServerLevel serverLevel)) return;
+		// Nothing in the game pots these; here an empty pot takes them and grows them.
+		if (Bonsai.plantItem(serverLevel, pos, player, stack)) {
+			level.gameEvent(player, GameEvent.BLOCK_CHANGE, pos);
+			cir.setReturnValue(InteractionResult.SUCCESS);
+			return;
+		}
 		if (!Bonsai.isBonsaiPot(serverLevel, pos)) return;
 
 		Block content = Block.byItem(stack.getItem());

@@ -11,6 +11,7 @@
     "sources": "https://github.com/fatlard1993/bonsai-saplings"
   },
   "license": "MIT",
+  "icon": "assets/bonsai-saplings-justfatlard/icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
