@@ -2,6 +2,10 @@
 
 A Fabric mod that turns a sapling in a flower pot into a little tree.
 
+## Screenshots
+
+![Every form, potted: each species in a row, cut back into a different shape](screenshot.png)
+
 ## What This Mod Does
 
 Put a sapling in a pot and it grows, at pot size. Sneak and cut it back with shears and it comes up as a
