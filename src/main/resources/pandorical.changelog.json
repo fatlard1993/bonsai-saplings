@@ -1,0 +1,14 @@
+{
+  "overview": [
+    "Put a sapling in a flower pot and it grows a little tree at pot size. Sneak and cut it back with shears and it comes up as a different shape."
+  ],
+  "versions": {
+    "1.0.1": [
+      "The same mod under a new version number, so the release had a file that could go up."
+    ],
+    "1.0.0": [
+      "Every sapling the game will pot grows a bonsai, pruned into another form with a pair of shears. A flower pot set in or on a decorated pot is a cachepot, which has the room for the larger forms: an oak with a full crown, a spruce three tiers high, a jungle giant on four trunks.",
+      "Bamboo, the huge mushrooms, the nether fungi, a saguaro from a cactus, deadwood from a dead bush, the chorus flower, tall flowers, seeds and trailing plants all grow from what the game already pots, and come back when the pot is emptied."
+    ]
+  }
+}
