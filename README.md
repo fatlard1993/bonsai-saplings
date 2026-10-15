@@ -62,6 +62,10 @@ Those displays are also the only record. Nothing stores which pots have trees in
 
 A pot filled before this was installed, or one whose tree somebody removed, grows one the first time a player reaches for it. There is deliberately no chunk-load sweep: planting means spawning entities and asking what entities are nearby, and neither belongs anywhere near chunk loading.
 
+## Installing
+
+Server-side only, and Pandorical is not needed: the little trees are built from vanilla blocks, so players connect with an unmodified client and see them. Singleplayer works too.
+
 ## Development
 
 Installing and the map of the source are in [DEVELOPMENT.md](DEVELOPMENT.md).
