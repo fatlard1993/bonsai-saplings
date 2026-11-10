@@ -3,6 +3,9 @@
     "Put a sapling in a flower pot and it grows a little tree at pot size. Sneak and cut it back with shears and it comes up as a different shape."
   ],
   "versions": {
+    "1.0.5": [
+      "Drop changelog notes for changes nothing in the game shows."
+    ],
     "1.0.0": [
       "Every sapling the game will pot grows a bonsai, pruned into another form with shears.",
       "A flower pot in or on a decorated pot is a cachepot, with room for the larger forms.",
