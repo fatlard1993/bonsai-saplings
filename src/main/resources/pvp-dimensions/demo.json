@@ -1,0 +1,55 @@
+{
+  "demo": {
+    "name": "Bonsai Saplings",
+    "icon": "minecraft:flower_pot",
+    "about": [
+      "A sapling in a flower pot grows into a little tree of its own kind, and sneaking with shears cuts it back into another shape.",
+      "Set down some pots and plant everything you've been given, then sneak and use the shears to turn and reshape them. Put a flower pot into a decorated pot for a cachepot, which grows bigger forms."
+    ]
+  },
+  "pvp_preset": 1,
+  "needs": ["bonsai-saplings-justfatlard"],
+  "preset": {
+    "name": "Bonsai Saplings",
+    "icon": "minecraft:flower_pot",
+    "pvp": false,
+    "game_mode": "survival",
+    "entry_kit": [
+      {"slot": 0, "item": {"id": "minecraft:flower_pot", "count": 32}},
+      {"slot": 1, "item": {"id": "minecraft:shears", "count": 1}},
+      {"slot": 2, "item": {"id": "minecraft:oak_sapling", "count": 4}},
+      {"slot": 3, "item": {"id": "minecraft:cherry_sapling", "count": 4}},
+      {"slot": 4, "item": {"id": "minecraft:spruce_sapling", "count": 4}},
+      {"slot": 5, "item": {"id": "minecraft:birch_sapling", "count": 4}},
+      {"slot": 6, "item": {"id": "minecraft:decorated_pot", "count": 4}},
+      {"slot": 7, "item": {"id": "minecraft:oak_planks", "count": 64}},
+      {"slot": 8, "item": {"id": "minecraft:bread", "count": 8}},
+      {"slot": 9, "item": {"id": "minecraft:jungle_sapling", "count": 4}},
+      {"slot": 10, "item": {"id": "minecraft:acacia_sapling", "count": 4}},
+      {"slot": 11, "item": {"id": "minecraft:dark_oak_sapling", "count": 4}},
+      {"slot": 12, "item": {"id": "minecraft:pale_oak_sapling", "count": 4}},
+      {"slot": 13, "item": {"id": "minecraft:mangrove_propagule", "count": 4}},
+      {"slot": 14, "item": {"id": "minecraft:azalea", "count": 4}},
+      {"slot": 15, "item": {"id": "minecraft:poplar_sapling", "count": 4}},
+      {"slot": 16, "item": {"id": "minecraft:bamboo", "count": 4}},
+      {"slot": 17, "item": {"id": "minecraft:cactus", "count": 4}},
+      {"slot": 18, "item": {"id": "minecraft:red_mushroom", "count": 4}},
+      {"slot": 19, "item": {"id": "minecraft:crimson_fungus", "count": 4}},
+      {"slot": 20, "item": {"id": "minecraft:sunflower", "count": 4}},
+      {"slot": 21, "item": {"id": "minecraft:chorus_flower", "count": 4}},
+      {"slot": 22, "item": {"id": "minecraft:vine", "count": 4}},
+      {"slot": 23, "item": {"id": "minecraft:short_grass", "count": 4}},
+      {"slot": 24, "item": {"id": "minecraft:wheat_seeds", "count": 4}},
+      {"slot": 25, "item": {"id": "minecraft:dead_bush", "count": 4}}
+    ],
+    "respawn_kit": "entry",
+    "goal": "time",
+    "mobs": "off",
+    "life": 15,
+    "size": 2,
+    "world": "overworld",
+    "shape": "natural",
+    "biome": "minecraft:cherry_grove",
+    "weather": "clear"
+  }
+}
