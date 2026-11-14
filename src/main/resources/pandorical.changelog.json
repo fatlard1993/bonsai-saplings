@@ -3,6 +3,9 @@
     "Put a sapling in a flower pot and it grows a little tree at pot size. Sneak and cut it back with shears and it comes up as a different shape."
   ],
   "versions": {
+    "1.0.6": [
+      "A demo to play in PvP Dimensions' onboarding."
+    ],
     "1.0.5": [
       "Drop changelog notes for changes nothing in the game shows."
     ],
